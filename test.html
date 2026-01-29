@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Тест обратной связи</title>
+</head>
+<body>
+    <h2>Тест отправки</h2>
+
+    <textarea id="text" placeholder="Введите текст"></textarea><br><br>
+    <button onclick="send()">Отправить</button>
+
+    <script>
+        function send() {
+            const text = document.getElementById('text').value;
+
+            fetch('http://localhost:3000/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            })
+            .then(() => alert('Отправлено'))
+            .catch(() => alert('Ошибка'));
+        }
+    </script>
+</body>
+</html>
