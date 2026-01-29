@@ -1,48 +1,34 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const TelegramBot = require('node-telegram-bot-api');
-
-// ====== НАСТРОЙКИ ======
-const TOKEN = '8102974446:AAHfcB1zH7cfsWPxml8QEnsHT0h8YL0KqrI'; // Вставь токен своего бота
-const CHANNEL_ID = '@personalthaigroup'; // Твой канал
+const cors = require('cors');
 
 const app = express();
-app.use(bodyParser.json());
+app.use(cors());
+app.use(express.json());
 
-// ====== Webhook бот ======
-const bot = new TelegramBot(TOKEN);
+const TOKEN = '8102974446:AAHfcB1zH7cfsWPxml8QEnsHT0h8YL0KqrI';
+//const ADMIN_ID = 343607859;
+const CHANNEL_ID = '@personalthaigroup';
+
+
+
+const bot = new TelegramBot(TOKEN); // без polling
 bot.setWebHook(`https://malina-server.onrender.com/bot${TOKEN}`);
 
-// ====== Получение обновлений от Telegram ======
-app.post(`/bot${TOKEN}`, (req, res) => {
-    bot.processUpdate(req.body);
-    res.sendStatus(200);
-});
-
-// ====== Обработка сообщений в канале (по желанию) ======
-bot.on('message', msg => {
-    console.log('📩 Сообщение от', msg.from.username, ':', msg.text);
-});
-
-// ====== Обратная связь и заказы ======
 app.post('/feedback', (req, res) => {
-    const { text, type } = req.body;
+    const { text } = req.body;
 
-    if (!text) return res.sendStatus(400);
+    console.log('Получен отзыв:', text);
 
-    if (type === 'order') {
-        console.log('Получен заказ:', text);
-        bot.sendMessage(CHANNEL_ID, text); // заказ без префикса
-    } else {
-        console.log('Получен отзыв:', text);
-        bot.sendMessage(CHANNEL_ID, `💬 Новый отзыв:\n\n${text}`); // только отзывы получают префикс
-    }
+    bot.sendMessage(
+    CHANNEL_ID,
+    `💬 Новый отзыв:\n\n${text}`
+);
 
-    res.sendStatus(200);
+
+    res.json({ status: 'ok' });
 });
 
-// ====== Запуск сервера ======
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Сервер запущен на порту ${PORT}`);
+app.listen(3000, () => {
+    console.log('🚀 Сервер запущен на http://localhost:3000');
 });
