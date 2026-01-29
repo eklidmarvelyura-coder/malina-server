@@ -1,18 +1,23 @@
 const express = require('express');
-const TelegramBot = require('node-telegram-bot-api');
 const cors = require('cors');
+const bodyParser = require('body-parser');
+const TelegramBot = require('node-telegram-bot-api');
+
+// ====== НАСТРОЙКИ ======
+const TOKEN = '8102974446:AAHfcB1zH7cfsWPxml8QEnsHT0h8YL0KqrI''; // вставь токен своего бота
+const CHANNEL_ID = '@personalthaigroup'; // твой канал
 
 const app = express();
 app.use(cors());
-app.use(express.json());
-
-const TOKEN = '8102974446:AAHfcB1zH7cfsWPxml8QEnsHT0h8YL0KqrI';
-//const ADMIN_ID = 343607859;
-const CHANNEL_ID = '@personalthaigroup';
-
+app.use(bodyParser.json());
 
 const bot = new TelegramBot(TOKEN, { polling: true });
 
+bot.on('message', msg => {
+    console.log('📩 message:', msg.text);
+});
+
+// ====== РАБОТА С FEEDBACK/ORDERS ======
 app.post('/feedback', (req, res) => {
     const { text, type } = req.body;
 
@@ -29,3 +34,8 @@ app.post('/feedback', (req, res) => {
     res.sendStatus(200);
 });
 
+// ====== ЗАПУСК СЕРВЕРА ======
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Сервер запущен на порту ${PORT}`);
+});
