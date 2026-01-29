@@ -14,19 +14,18 @@ const CHANNEL_ID = '@personalthaigroup';
 const bot = new TelegramBot(TOKEN, { polling: true });
 
 app.post('/feedback', (req, res) => {
-    const { text } = req.body;
+    const { text, type } = req.body;
 
-    console.log('Получен отзыв:', text);
+    if (!text) return res.sendStatus(400);
 
-    bot.sendMessage(
-    CHANNEL_ID,
-    `💬 Новый отзыв:\n\n${text}`
-);
+    if (type === 'order') {
+        console.log('Получен заказ:', text);
+        bot.sendMessage(CHANNEL_ID, text);
+    } else {
+        console.log('Получен отзыв:', text);
+        bot.sendMessage(CHANNEL_ID, `💬 Новый отзыв:\n\n${text}`);
+    }
 
-
-    res.json({ status: 'ok' });
+    res.sendStatus(200);
 });
 
-app.listen(3000, () => {
-    console.log('🚀 Сервер запущен на http://localhost:3000');
-});
